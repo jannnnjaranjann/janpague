@@ -1,0 +1,31 @@
+# Re-extract the newly uploaded and reorganized zip files
+
+uploads_new = {
+    "OUTPUTS": "/mnt/data/OUTPUTS.zip",
+    "ME_JAN_KARL": "/mnt/data/ME JAN KARL.zip",
+    "PLATFORMS": "/mnt/data/PLATFORMS.zip",
+}
+
+# Extract each uploaded zip into its own folder (overwrite if exists)
+extracted_paths_new = {}
+import shutil
+
+for name, path in uploads_new.items():
+    extract_dir = f"/mnt/data/{name}"
+    if os.path.exists(extract_dir):
+        shutil.rmtree(extract_dir)
+    os.makedirs(extract_dir, exist_ok=True)
+    with zipfile.ZipFile(path, 'r') as zip_ref:
+        zip_ref.extractall(extract_dir)
+    extracted_paths_new[name] = extract_dir
+
+# List all files inside to confirm proper extraction
+all_files = {}
+for name, path in extracted_paths_new.items():
+    files = []
+    for root, dirs, filenames in os.walk(path):
+        for f in filenames:
+            files.append(os.path.relpath(os.path.join(root, f), path))
+    all_files[name] = files
+
+all_files
